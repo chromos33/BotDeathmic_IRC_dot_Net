@@ -32,7 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IrcDotNet">
+    <Reference Include="IrcDotNet, Version=0.4.1.37926, Culture=neutral, PublicKeyToken=44f6d157e750246b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\IrcDotNet.0.4.1\lib\net40\IrcDotNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -44,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataFiles\XMLProvider.cs" />
     <Compile Include="Exceptions\InvalidCommandParametersException.cs" />
     <Compile Include="Exceptions\IrcBotException.cs" />
     <Compile Include="IRC\BasicIrcBot.cs" />
@@ -73,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\" />
-    <Folder Include="Models\" />
     <Folder Include="StreamInfo\" />
   </ItemGroup>
   <ItemGroup>

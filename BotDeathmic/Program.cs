@@ -45,6 +45,7 @@ namespace DeathmicChatbot
                         if(_client.ServerName.Contains("quakenet"))
                         {
                             quakeservername = _client.ServerName;
+                            bot.thisclient = _client;
                         }
                         
                     }
@@ -57,6 +58,7 @@ namespace DeathmicChatbot
                     foreach (var _client in bot.Clients)
                     {
                         _client.Channels.Join(Properties.Settings.Default.Channel);
+                        bot.thisclient = _client;
                     }
                 }
                 

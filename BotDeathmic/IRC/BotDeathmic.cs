@@ -7,12 +7,23 @@ using IrcDotNet;
 using DeathmicChatbot.Exceptions;
 using DeathmicChatbot.IRC;
 using DeathmicChatbot.Properties;
+using System.Collections;
+using IrcDotNet.Ctcp;
 
 namespace DeathmicChatbot.IRC
 {
+    public class BotDeathmicMessageTarget : IrcDotNet.IIrcMessageTarget // Summary:
+    //     Represents the target of a message or notice sent by an IRC client.
+    {
+        // Summary:
+        //     Gets the name of the source, as understood by the IRC protocol.
+        public string Name { get; set; }
+    }
     public class BotDeathmic : BasicIrcBot
     {
+        XMLProvider xmlprovider = new XMLProvider();
         String[] IgnoreTheseUsers = new String[] {"AUTH","Global","py-ctcp","peer"};
+        public IrcClient thisclient = null;
         public BotDeathmic()
             : base()
         {
@@ -87,12 +98,137 @@ namespace DeathmicChatbot.IRC
         protected override void InitializeChatCommandProcessors()
         {
             base.InitializeChatCommandProcessors();
+
             this.ChatCommandProcessors.Add("test", Test);
+            this.ChatCommandProcessors.Add("addstream", AddStream);
+            this.ChatCommandProcessors.Add("delstream", DelStream);
+            this.ChatCommandProcessors.Add("streamcheck", StreamCheck);
+            this.ChatCommandProcessors.Add("starvoting", StartVoting);
+            this.ChatCommandProcessors.Add("endvoting", EndVoting);
+            this.ChatCommandProcessors.Add("pickrandomuser", PickRandomUser);
+            this.ChatCommandProcessors.Add("roll", Roll);
+            this.ChatCommandProcessors.Add("countercount", CounterCount);
+            this.ChatCommandProcessors.Add("counterreset", CounterReset);
+            this.ChatCommandProcessors.Add("counterstats", CounterStats);
+            this.ChatCommandProcessors.Add("vote", Vote);
+            this.ChatCommandProcessors.Add("removevote", RemoveVote);
+            this.ChatCommandProcessors.Add("listvotings", ListVotings);
+            this.ChatCommandProcessors.Add("toggleuserloggin", ToggleUserLogging);
+            this.ChatCommandProcessors.Add("sendmessage", SendMessage);
 
             
 
         }
+        private string combineParameters(IList<string> parameters)
+        {
+            string combined = "";
+            int stringcount =0;
+            foreach(string insert in parameters)
+            {
+                if(stringcount < parameters.Count())
+                {
+                    combined += insert + " ";
+                }
+                else
+                {
+                    combined += insert;
+                }
+                
+                stringcount++;
+            }
+            return combined;
+        }
+        private void SendMessage(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            client.LocalUser.SendMessage(Properties.Settings.Default.Channel.ToString(), combineParameters(parameters));
+        }
 
+        private void AddStream(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            // TODO continue when streamprovider stuff implemented
+                string message = xmlprovider.AddStream(parameters[0], source.Name);
+                //_streamProviderManager.AddStream(commandArgs);
+                if (message == (source.Name + " added Stream to the streamlist"))
+                {
+                    client.LocalUser.SendMessage(Properties.Settings.Default.Channel.ToString(), String.Format("{0} added {1} to the streamlist", source.Name, parameters[0]));
+                }
+                else if (message == (source.Name + " wanted to readd Stream to the streamlist."))
+                {
+                    CtcpClient ctcp_client = new CtcpClient(client);
+                    BotDeathmicMessageTarget _target = new BotDeathmicMessageTarget();
+                    _target.Name = parameters[0];
+                    targets.Add(_target);
+                    Console.WriteLine(ctcp_client.IrcClient.LocalUser.ToString());
+                    ctcp_client.SendAction(targets, Properties.Settings.Default.Name + " slaps " + parameters[0] + " around for being an idiot");
+                }
+
+            
+        }
+
+        private void DelStream(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void StreamCheck(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void StartVoting(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void EndVoting(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void PickRandomUser(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Roll(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CounterCount(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CounterReset(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CounterStats(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Vote(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RemoveVote(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ListVotings(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ToggleUserLogging(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            throw new NotImplementedException();
+        }
         private void Test(IrcClient client, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
         {
             var sourceUser = (IrcUser)source;
@@ -113,98 +249,11 @@ namespace DeathmicChatbot.IRC
                 }
             }
             client.LocalUser.SendMessage(targets, "These Users are currently in this channel: " + test);
-            client.LocalUser.SendMessage(targets, "These Users are currently in this channel: " + test);
-            client.LocalUser.SendMessage(targets, "These Users are currently in this channel: " + test);
-            client.LocalUser.SendMessage(targets, "These Users are currently in this channel: " + test);
-            client.LocalUser.SendMessage(targets, "These Users are currently in this channel: " + test);
-            client.LocalUser.SendMessage(targets, "These Users are currently in this channel: " + test);
-            client.LocalUser.SendMessage(targets, "These Users are currently in this channel: " + test);
             
             
             //client.LocalUser.SendMessage(replyTargets., replyTargets.Count().ToString(), Encoding.UTF8);
             
 
         }
-
-        #region Chat Command Processors
-
-        private void ProcessChatCommandListUsers(IrcClient client, IIrcMessageSource source,
-            IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
-        {
-            var sourceUser = (IrcUser)source;
-
-            if (parameters.Count != 0)
-                throw new InvalidCommandParametersException(1);
-
-            // List all currently logged-in twitter users.
-            var replyTargets = GetDefaultReplyTarget(client, sourceUser, targets);
-
-            throw new NotImplementedException();
-        }
-
-        private void ProcessChatCommandLogIn(IrcClient client, IIrcMessageSource source,
-            IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
-        {
-            var sourceUser = (IrcUser)source;
-            
-            throw new NotImplementedException();
-                // Log-in failed.
-
-                //client.LocalUser.SendMessage(replyTargets, "Invalid log-in username/password.");
-        }
-
-        private void ProcessChatCommandLogOut(IrcClient client, IIrcMessageSource source,
-            IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
-        {
-            var sourceUser = (IrcUser)source;
-           
-        }
-
-        private void ProcessChatCommandSend(IrcClient client, IIrcMessageSource source,
-            IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
-        {
-            var sourceUser = (IrcUser)source;
-            throw new NotImplementedException();
-            if (parameters.Count != 1)
-            {
-
-            }
-                
-        }
-
-        private void ProcessChatCommandHome(IrcClient client, IIrcMessageSource source,
-            IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
-        {
-            var sourceUser = (IrcUser)source;
-            throw new NotImplementedException();
-        }
-
-        private void ProcessChatCommandMentions(IrcClient client, IIrcMessageSource source,
-            IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
-        {
-            var sourceUser = (IrcUser)source;
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        private string SanitizeTextForIrc(string value)
-        {
-            var sb = new StringBuilder(value);
-            sb.Replace('\r', ' ');
-            sb.Replace('\n', ' ');
-            return sb.ToString();
-        }
-
-        protected override void InitializeCommandProcessors()
-        {
-            base.InitializeCommandProcessors();
-        }
-
-        #region Command Processors
-
-        //
-
-        #endregion
     }
 }
