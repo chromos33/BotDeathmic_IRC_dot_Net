@@ -18,6 +18,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using IrcDotNet.Ctcp;
 
 namespace DeathmicChatbot
 {
@@ -46,6 +47,12 @@ namespace DeathmicChatbot
                         {
                             quakeservername = _client.ServerName;
                             bot.thisclient = _client;
+                            bot.ctcpClient1 = new CtcpClient(_client);
+                            bot.ctcpClient1.ClientVersion = bot.clientVersionInfo;
+                            bot.ctcpClient1.PingResponseReceived += bot.ctcpClient_PingResponseReceived;
+                            bot.ctcpClient1.VersionResponseReceived += bot.ctcpClient_VersionResponseReceived;
+                            bot.ctcpClient1.TimeResponseReceived += bot.ctcpClient_TimeResponseReceived;
+                            bot.ctcpClient1.ActionReceived += bot.ctcpClient_ActionReceived;
                         }
                         
                     }
@@ -59,6 +66,7 @@ namespace DeathmicChatbot
                     {
                         _client.Channels.Join(Properties.Settings.Default.Channel);
                         bot.thisclient = _client;
+                        bot.ctcpClient1 = new CtcpClient(_client);
                     }
                 }
                 
@@ -79,11 +87,6 @@ namespace DeathmicChatbot
                     bot.Dispose();
             }
 
-        }
-
-        static void Join(string Channel , IrcClient Client)
-        {
-            Client.Channels.Join(Properties.Settings.Default.Channel);
         }
     }
 }
